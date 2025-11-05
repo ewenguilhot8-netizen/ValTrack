@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valorant Stats</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="container">
+        <div class="search-box">
+            <input type="text" id="riotIdInput" placeholder="Utilisateur#TAG">
+            <button id="searchButton">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z"></path></svg>
+            </button>
+        </div>
+
+        <div id="loader" class="loader" style="display: none;"></div>
+        <div id="error" class="error-message" style="display: none;"></div>
+
+        <div id="resultsContainer" style="display: none;">
+            <div class="profile-header">
+                <img id="playerAvatar" src="" alt="Avatar" />
+                <div>
+                    <h2 id="playerName"></h2>
+                    <span id="playerLevel" class="tag"></span>
+                </div>
+            </div>
+
+            <h3>Statistiques Générales</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>K/D Ratio</h4>
+                    <p id="kdRatio">-</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Taux de Headshot</h4>
+                    <p id="hsPercent">-</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Taux de Victoire</h4>
+                    <p id="winPercent">-</p>
+                </div>
+            </div>
+
+            <h3>Historique des matchs (Simplifié)</h3>
+            <div id="matchHistory" class="match-list">
+                </div>
+        </div>
+
+        <div class="history-panel">
+            <h3>Recherches Récentes</h3>
+            <ul id="historyList">
+                </ul>
+        </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
