@@ -3,58 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valorant Stats</title>
+    <title>ValTrack</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="background-art" id="agentBackgroundArt"></div>
+    <div class="background-art" id="mapBackgroundArt"></div>
+
+    <nav class="navbar" id="mainNavbar" style="display: none;">
+        <div class="nav-brand">ValTrack</div>
+        <div class="nav-links">
+            <a href="#" id="navFinder" class="nav-link">Recherche</a>
+            <a href="#" id="navLeaderboard" class="nav-link">Leaderboard</a>
+            <a href="#" id="navCompare" class="nav-link">Comparer</a>
+            <a href="#" id="navArmory" class="nav-link">Armurerie</a>
+            </div>
+        <button id="updateButton" class="update-button" style="display: none;">Mettre à jour</button>
+    </nav>
+
     <main class="container">
-        <div class="search-box">
-            <input type="text" id="riotIdInput" placeholder="Utilisateur#TAG">
-            <button id="searchButton">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z"></path></svg>
-            </button>
+        
+        <div id="finderPage" class="page page-active">
+            <div class="splash-container">
+                <h1>ValTrack</h1>
+                <div class="search-box">
+                    <input type="text" id="riotIdInput" class="search-input-with-history" placeholder="Utilisateur#TAG">
+                    <button id="searchButton">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z"></path></svg>
+                    </button>
+                </div>
+                <div class="splash-nav-links">
+                    <a href="#" id="splashNavLeaderboard">Leaderboard</a>
+                    <a href="#" id="splashNavCompare">Comparer</a>
+                    <a href="#" id="splashNavArmory">Armurerie</a>
+                    </div>
+            </div>
+        </div>
+        
+        <div id="resultsPage" class="page" style="display: none;">
+            <div id="loader" class="loader" style="display: none;"></div>
+            <div id="error" class="error-message" style="display: none;"></div>
+            <div id="finderResults">
+                </div>
         </div>
 
-        <div id="loader" class="loader" style="display: none;"></div>
-        <div id="error" class="error-message" style="display: none;"></div>
+        <div id="comparePage" class="page" style="display: none;">
+            <div class="compare-search-box card">
+                <div class="search-box">
+                    <input type="text" id="compareInput1" class="search-input-with-history" placeholder="Joueur 1#TAG">
+                </div>
+                <span class="vs-text">VS</span>
+                <div class="search-box">
+                    <input type="text" id="compareInput2" class="search-input-with-history" placeholder="Joueur 2#TAG">
+                </div>
+                <button id="compareSearchButton" class="update-button">Comparer</button>
+            </div>
+            
+            <div id="compareLoader" class="loader" style="display: none;"></div>
+            <div id="compareError" class="error-message" style="display: none;"></div>
+            
+            <div class="compare-results-grid">
+                <div id="compareResults1">
+                    </div>
+                <div id="compareResults2">
+                    </div>
+            </div>
+        </div>
 
-        <div id="resultsContainer" style="display: none;">
-            <div class="profile-header">
-                <img id="playerAvatar" src="" alt="Avatar" />
-                <div>
-                    <h2 id="playerName"></h2>
-                    <span id="playerLevel" class="tag"></span>
+        <div id="leaderboardPage" class="page" style="display: none;">
+            <div class="leaderboard-container card">
+                <h3>Classement Radiant - Europe</h3>
+                <div id="leaderboardLoader" class="loader"></div>
+                <div id="leaderboardError" class="error-message" style="display: none;"></div>
+                <ol id="leaderboardList" class="scroll-container">
+                    </ol>
+            </div>
+        </div>
+        
+        <div id="armoryPage" class="page" style="display: none;">
+            <div id="armoryListContainer">
+                <h3>Armurerie</h3>
+                <div id="armoryLoader" class="loader" style="display: none;"></div>
+                <div id="armoryError" class="error-message" style="display: none;"></div>
+                <div id="armoryGrid" class="armory-grid">
+                    </div>
+            </div>
+            
+            <div id="armoryDetailContainer" class="armory-detail" style="display: none;">
+                </div>
+        </div>
+        </main>
+    
+    <div id="searchHistoryDropdown" class="history-dropdown card">
+        <ul id="searchHistoryList"></ul>
+    </div>
+
+    <template id="player-profile-template">
+        <div class="results-wrapper">
+            <div class="profile-grid">
+                <div class="profile-header card">
+                    <img class="playerAvatar" src="" alt="Avatar" />
+                    <div>
+                        <h2 class="playerName"></h2>
+                        <span class="playerLevel tag"></span>
+                        <span class="playerPlaytime tag"></span>
+                    </div>
+                </div>
+                <div class="rank-card card clickable rankCard">
+                    <div class="rr-circle rrCircle">
+                        <div class="rr-circle-inner">
+                            <img class="rankImage" src="" alt="Rang" />
+                        </div>
+                    </div>
+                    <div class="rank-details">
+                        <h3 class="rankName"></h3>
+                        <p class="rrPoints"></p>
+                    </div>
                 </div>
             </div>
 
-            <h3>Statistiques Générales</h3>
+            <div class="rrGraphDropdownContent card" style="display: none; margin-bottom: 20px;">
+                <h3>Évolution des RR</h3>
+                <div class="rrGraphContainer"></div>
+            </div>
+
+            <h3>Statistiques (Compétitif - <span class="gameCountLabel"></span>)</h3>
             <div class="stats-grid">
-                <div class="stat-card">
+                <div class="stat-card card">
                     <h4>K/D Ratio</h4>
-                    <p id="kdRatio">-</p>
+                    <p class="kdRatio">-</p>
+                    <div class="sparkline-container kdGraph"></div>
                 </div>
-                <div class="stat-card">
-                    <h4>Taux de Headshot</h4>
-                    <p id="hsPercent">-</p>
-                </div>
-                <div class="stat-card">
+                <div class="stat-card card">
                     <h4>Taux de Victoire</h4>
-                    <p id="winPercent">-</p>
+                    <p class="winPercent">-</p>
+                    <div class="sparkline-container winRateGraph"></div>
+                </div>
+                <div class="stat-card card">
+                    <h4>Taux de Headshot</h4>
+                    <p class="hsPercent">-</p>
+                    <div class="sparkline-container hsGraph"></div>
+                </div>
+                <div class="stat-card card">
+                    <h4>ACS</h4>
+                    <p class="acs">-</p>
+                    <div class="sparkline-container acsGraph"></div>
+                </div>
+                <div class="stat-card card">
+                    <h4>ADR</h4>
+                    <p class="adr">-</p>
+                    <div class="sparkline-container adrGraph"></div>
+                </div>
+                <div class="stat-card card">
+                    <h4>Stats Score</h4>
+                    <div class="stats-score-circle statsScoreCircle">
+                        <div class="stats-score-inner">
+                            <p class="statsScore"></p>
+                        </div>
+                    </div>
+                    <span class="statsScoreLabel">/ 1000</span>
+                </div>
+            </div>
+            
+            <h3>Analyse</h3>
+            <div class="analysis-grid">
+                <div class="stat-card card agent-map-card">
+                    <h4>Meilleur Agent</h4>
+                    <img class="bestAgentImage" src="" alt="" />
+                    <p class="bestAgentName highlight">-</p>
+                    <span class="bestAgentStats"></span>
+                </div>
+                <div class="stat-card card agent-map-card">
+                    <h4>Pire Agent</h4>
+                    <img class="worstAgentImage" src="" alt="" />
+                    <p class="worstAgentName highlight">-</p>
+                    <span class="worstAgentStats"></span>
+                </div>
+                <div class="stat-card card agent-map-card">
+                    <h4>Meilleure Map</h4>
+                    <img class="bestMapImage" src="" alt="" />
+                    <p class="bestMapName highlight">-</p>
+                    <span class="bestMapStats"></span>
+                </div>
+                <div class="stat-card card agent-map-card">
+                    <h4>Pire Map</h4>
+                    <img class="worstMapImage" src="" alt="" />
+                    <p class="worstMapName highlight">-</p>
+                    <span class="worstMapStats"></span>
                 </div>
             </div>
 
-            <h3>Historique des matchs (Simplifié)</h3>
-            <div id="matchHistory" class="match-list">
-                </div>
+            <div class="history-panel card full-width">
+                <h3>Historique des matchs (Compétitif - <span class="gameCountLabel2"></span>)</h3>
+                <div class="matchHistory"></div>
+            </div>
         </div>
+    </template>
 
-        <div class="history-panel">
-            <h3>Recherches Récentes</h3>
-            <ul id="historyList">
-                </ul>
-        </div>
-    </main>
     <script src="script.js"></script>
 </body>
 </html>
