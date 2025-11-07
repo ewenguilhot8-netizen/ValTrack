@@ -11,33 +11,39 @@
     <div class="background-art" id="agentBackgroundArt"></div>
     <div class="background-art" id="mapBackgroundArt"></div>
 
-    <nav class="navbar" id="mainNavbar" style="display: none;">
+    <nav class="navbar" id="mainNavbar" style="display: flex;">
         <div class="nav-brand">RadianiteDB</div>
         <div class="nav-links">
             <a href="#" id="navFinder" class="nav-link">Recherche</a>
             <a href="#" id="navLeaderboard" class="nav-link">Leaderboard</a>
             <a href="#" id="navCompare" class="nav-link">Comparer</a>
             <a href="#" id="navArmory" class="nav-link">Armurerie</a>
-            </div>
+            <a href="#" id="navFollowed" class="nav-link">Suivis</a>
+        </div>
         <button id="updateButton" class="update-button" style="display: none;">Mettre à jour</button>
     </nav>
+
+    <div id="auth-status" class="auth-container">
+        </div>
 
     <main class="container">
         
         <div id="finderPage" class="page page-active">
             <div class="splash-container">
-                <h1>Radianite Database</h1>
+                <img id="splashLogo" src="image_150065.png" alt="RadianiteDB Logo" />
                 <div class="search-box">
                     <input type="text" id="riotIdInput" class="search-input-with-history" placeholder="Utilisateur#TAG">
                     <button id="searchButton">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z"></path></svg>
+                        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M10 18a7.952 7.952 0 0 0 4.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0 0 18 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z"></path></svg>
+                        <div class="loader-small search-loader" style="display: none;"></div>
                     </button>
                 </div>
                 <div class="splash-nav-links">
                     <a href="#" id="splashNavLeaderboard">Leaderboard</a>
                     <a href="#" id="splashNavCompare">Comparer</a>
                     <a href="#" id="splashNavArmory">Armurerie</a>
-                    </div>
+                    <a href="#" id="splashNavFollowed">Suivis</a>
+                </div>
             </div>
         </div>
         
@@ -45,7 +51,7 @@
             <div id="loader" class="loader" style="display: none;"></div>
             <div id="error" class="error-message" style="display: none;"></div>
             <div id="finderResults">
-                </div>
+            </div>
         </div>
 
         <div id="comparePage" class="page" style="display: none;">
@@ -65,35 +71,60 @@
             
             <div class="compare-results-grid">
                 <div id="compareResults1">
-                    </div>
+                </div>
                 <div id="compareResults2">
-                    </div>
+                </div>
             </div>
         </div>
 
         <div id="leaderboardPage" class="page" style="display: none;">
             <div class="leaderboard-container card">
                 <h3>Classement Radiant - Europe</h3>
+                <input type="text" id="leaderboardSearchInput" placeholder="Rechercher un joueur...">
                 <div id="leaderboardLoader" class="loader"></div>
                 <div id="leaderboardError" class="error-message" style="display: none;"></div>
                 <ol id="leaderboardList" class="scroll-container">
-                    </ol>
+                </ol>
             </div>
         </div>
         
         <div id="armoryPage" class="page" style="display: none;">
             <div id="armoryListContainer">
                 <h3>Armurerie</h3>
+                <div class="armory-controls card">
+                    <input type="text" id="armorySearchInput" placeholder="Rechercher un skin (ex: Reaver)...">
+                    <div class="armory-categories">
+                        <button class="armory-cat-button active" data-category="all">Tous</button>
+                        <button class="armory-cat-button" data-category="Melee">Mêlée</button>
+                        <button class="armory-cat-button" data-category="Sidearm">Pistolets</button>
+                        <button class="armory-cat-button" data-category="SMG">PMs</button>
+                        <button class="armory-cat-button" data-category="Shotgun">Fusils à pompe</button>
+                        <button class="armory-cat-button" data-category="Rifle">Fusils</button>
+                        <button class="armory-cat-button" data-category="Sniper">Snipers</button>
+                        <button class="armory-cat-button" data-category="Heavy">Lourdes</button>
+                    </div>
+                </div>
                 <div id="armoryLoader" class="loader" style="display: none;"></div>
                 <div id="armoryError" class="error-message" style="display: none;"></div>
                 <div id="armoryGrid" class="armory-grid">
-                    </div>
+                </div>
             </div>
             
             <div id="armoryDetailContainer" class="armory-detail" style="display: none;">
-                </div>
+            </div>
         </div>
-        </main>
+
+        <div id="followedPage" class="page" style="display: none;">
+            <div class="card">
+                <h3>Joueurs Suivis</h3>
+                <div id="followedLoader" class="loader" style="display: none;"></div>
+                <div id="followedError" class="error-message" style="display: none;"></div>
+                <div id="followedList" class="followed-list-container">
+                </div>
+            </div>
+        </div>
+
+    </main>
     
     <div id="searchHistoryDropdown" class="history-dropdown card">
         <ul id="searchHistoryList"></ul>
@@ -106,8 +137,19 @@
                     <img class="playerAvatar" src="" alt="Avatar" />
                     <div>
                         <h2 class="playerName"></h2>
+                        <div class="stats-score-reveal-wrapper">
+                            <span class="stats-score-value blurred" title="Appuyer pour révéler">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" class="icon-eye-slash">
+                                  <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5-8 5.5-8 5.5S.94 9.72 2.641 11.238l.708-.708C2.072 9.225 1 8 1 8s3-5.5 7-5.5 7 5.5 7 5.5c-1.072 1.225-2.072 2.238-2.641 2.53l.708.708z"/>
+                                  <path d="M10.79 12.912l-1.614-1.615C9.431 11.13 9.7 10.96 10 10.96c.3 0 .569.07 1.058.21l-1.267 1.267zM8 10.96c-1.125 0-2.18-.32-3.112-.85A6.99 6.99 0 0 1 2.306 9.75L.359 11.7A8.008 8.008 0 0 0 8 13.5c1.007 0 1.966-.19 2.827-.52l-.214-.214zm2.589-2.16-1.549-1.549A.5.5 0 0 0 8.5 7.039l-1.22.41L6.5 6.5l.41-1.22a.5.5 0 0 0-.82-.578L3.189 6.452A6.97 6.97 0 0 1 1 8c0 .69.177 1.34.49 1.9l.001.002.016.033c.016.03.03.06.046.09l.017.03-.001-.002.012.02.006.012.002.004c.023.045.048.09.075.133l.017.026.014.02c.012.016.023.03.035.045.024.03.048.06.074.09.012.014.025.028.038.042l.001.001c.217.217.44.422.67.615.01.008.019.017.029.025l.001.001.002.001a1.492 1.492 0 0 1 .12 1.091l-.21.42a1.5 1.5 0 0 0 2.27 2.27l.42-.21a1.492 1.492 0 0 1 1.09-.12l.001-.001.002-.001c.008-.004.017-.008.025-.012a6.95 6.95 0 0 0 .615-.67l.001-.001c.014-.012.028-.025.042-.038.026-.024.05-.048.073-.074.015-.012.028-.023.044-.035l.02-.014.026-.017c.043-.027.088-.052.133-.075l.004-.002.012-.006.02-.012.002-.001l.03-.017c.03-.016.06-.03.09-.046l.033-.016.002-.001.002-.001c.56-.313 1.09-.7 1.57-1.15l1.987 1.987a.5.5 0 0 0 .707-.707L1.707 3.707A.5.5 0 0 0 1 3.707L.293 4.414a.5.5 0 0 0 0 .707l1.987 1.987c-1.42.92-2.926 1.5-4.522 1.5-5 0-8-5.5-8-5.5S2.637 1.583 6.6 1.181A.5.5 0 0 0 7 1.74v.041c.22 3.12 1.622 5.56 3.655 6.93l.002.001.001.001z"/>
+                                </svg>
+                                <span class="score-number"></span>
+                            </span>
+                            <span class="score-label">/ 1000 Stats Score</span>
+                        </div>
                         <span class="playerLevel tag"></span>
                         <span class="playerPlaytime tag"></span>
+                        <button class="follow-button update-button" data-riotid="">Suivre</button>
                     </div>
                 </div>
                 <div class="rank-card card clickable rankCard">
@@ -119,6 +161,7 @@
                     <div class="rank-details">
                         <h3 class="rankName"></h3>
                         <p class="rrPoints"></p>
+                        <span class="rrChange tag" style="display: none;"></span>
                     </div>
                 </div>
             </div>
@@ -155,15 +198,6 @@
                     <p class="adr">-</p>
                     <div class="sparkline-container adrGraph"></div>
                 </div>
-                <div class="stat-card card">
-                    <h4>Stats Score</h4>
-                    <div class="stats-score-circle statsScoreCircle">
-                        <div class="stats-score-inner">
-                            <p class="statsScore"></p>
-                        </div>
-                    </div>
-                    <span class="statsScoreLabel">/ 1000</span>
-                </div>
             </div>
             
             <h3>Analyse</h3>
@@ -198,10 +232,37 @@
                 <h3>Historique des matchs (Compétitif - <span class="gameCountLabel2"></span>)</h3>
                 <div class="matchHistory"></div>
             </div>
-        </div>
+
+            <div class="comments-section-wrapper card full-width">
+                <h3>Commentaires</h3>
+                
+                <div class="latest-comment-display" id="latestCommentDisplay">
+                    <p class="no-comment-placeholder">Soyez le premier à laisser un commentaire !</p>
+                </div>
+
+                <div class="comment-form" id="commentForm" style="display: none;">
+                    <textarea id="commentTextarea" placeholder="Écrire un commentaire positif... (max 500)" maxlength="500"></textarea>
+                    <div class="comment-form-actions">
+                        <span id="commentError" class="error-message" style="display:none; text-align: left; padding: 5px 10px; margin: 0;"></span>
+                        <button id="publishCommentBtn" class="update-button">Publier</button>
+                    </div>
+                </div>
+                <p class="comment-login-prompt" id="commentLoginPrompt">
+                    <a href="/auth/discord">Connectez-vous avec Discord</a> pour laisser un commentaire.
+                </p>
+
+                <button class="view-all-comments-btn" id="viewAllCommentsBtn" style="display: none;">
+                    Voir tous les commentaires (<span id="commentCount">0</span>)
+                </button>
+                <div class="comments-dropdown-content" id="commentsDropdown" style="display: none;">
+                    <div class="loader" id="commentsLoader" style="display: none;"></div>
+                    <div class="comments-list" id="commentsList"></div>
+                    <div class="comments-pagination" id="commentsPagination"></div>
+                </div>
+            </div>
+            </div>
     </template>
 
     <script src="script.js"></script>
 </body>
-
 </html>
