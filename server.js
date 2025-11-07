@@ -20,9 +20,9 @@ const port = 3000;
 
 app.use(cors());
 app.use(express.static('public'));
-app.use(express.json()); // Correction: Nécessaire pour lire req.body
+app.use(express.json()); // <-- CORRECTION: Ajouté pour lire req.body
 
-// --- henrikApi ---
+// --- CORRECTION: henrikApi doit être défini ICI ---
 const henrikApi = axios.create({
     baseURL: 'https://api.henrikdev.xyz',
     headers: { 'Authorization': HENRIK_API_KEY }
@@ -32,7 +32,7 @@ const henrikApi = axios.create({
 
 // --- Configuration Passport & Session ---
 app.use(session({
-    secret: 'votre super secret, changez moi svp', 
+    secret: 'Brj2sBvW84Lnq5LvK72N7DAeSOYt0wCO', // Changez ceci
     resave: false,
     saveUninitialized: false
 }));
@@ -55,8 +55,8 @@ passport.deserializeUser(async (id, done) => {
 
 passport.use(new DiscordStrategy({
     // --- IMPORTANT: Remplissez ces valeurs ---
-    clientID: 'VOTRE_CLIENT_ID_DISCORD',       // ◀️◀️ REMPLISSEZ CECI
-    clientSecret: 'VOTRE_CLIENT_SECRET_DISCORD', // ◀️◀️ REMPLISSEZ CECI
+    clientID: '1436123733197590624',       // ◀️◀️ REMPLISSEZ CECI
+    clientSecret: 'Brj2sBvW84Lnq5LvK72N7DAeSOYt0wCO', // ◀️◀️ REMPLISSEZ CECI
     // --- FIN ---
     callbackURL: 'http://localhost:3000/auth/discord/callback',
     scope: ['identify', 'guilds'] 
@@ -127,7 +127,7 @@ app.get('/api/followed', ensureAuthenticated, async (req, res) => {
 });
 
 app.post('/api/follow', ensureAuthenticated, async (req, res) => {
-    const { riotId } = req.body; 
+    const { riotId } = req.body; // Ceci devrait maintenant fonctionner
     if (!riotId) return res.status(400).json({ message: 'riotId manquant' });
 
     const existing = await knex('followed_players')
@@ -176,7 +176,7 @@ app.post('/api/comments', ensureAuthenticated, async (req, res) => {
     }
 
     try {
-        // Vérifier si l'utilisateur a déjà commenté ce profil
+        // --- Vérifier si l'utilisateur a déjà commenté ---
         const existingComment = await knex('player_comments')
             .where({
                 riot_id: riotId,
@@ -187,6 +187,7 @@ app.post('/api/comments', ensureAuthenticated, async (req, res) => {
         if (existingComment) {
             return res.status(403).json({ message: 'Vous avez déjà commenté ce profil.' });
         }
+        // --- FIN DE LA VÉRIFICATION ---
 
         const [newComment] = await knex('player_comments').insert({
             riot_id: riotId,
@@ -556,8 +557,8 @@ app.get('/api/stats/:name/:tag', async (req, res) => {
                 agents: getBestWorst(agentStats)
             },
             matchHistory: processedMatchHistory,
-            latestComment: latestComment, 
-            userComment: userComment      
+            latestComment: latestComment, // NOUVEAU
+            userComment: userComment      // NOUVEAU
         };
         
         playerStatsCache[cacheKey] = {
@@ -632,6 +633,7 @@ app.get('/api/weapons', async (req, res) => {
         return res.json(weaponCache.data);
     }
     try {
+        // CORRECTION: Utiliser axios, pas henrikApi pour une URL externe
         const response = await axios.get('https://valorant-api.com/v1/weapons?language=fr-FR');
         const filteredData = response.data.data.map(weapon => ({
             uuid: weapon.uuid,

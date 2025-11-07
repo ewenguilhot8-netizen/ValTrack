@@ -36,7 +36,7 @@ async function setupDatabase() {
         console.log("Table 'bot_memory' créée.");
     }
 
-    // Table des Commentaires
+    // --- NOUVEAU: Table des Commentaires ---
     if (!await knex.schema.hasTable('player_comments')) {
         await knex.schema.createTable('player_comments', table => {
             table.increments('id').primary();
@@ -49,6 +49,7 @@ async function setupDatabase() {
         });
         console.log("Table 'player_comments' créée.");
     }
+    // --- FIN NOUVEAU ---
 }
 
 // Exporter knex et la fonction d'init
