@@ -58,7 +58,7 @@ passport.use(new DiscordStrategy({
     clientID: '1436123733197590624',       // ◀️◀️ REMPLISSEZ CECI
     clientSecret: 'Brj2sBvW84Lnq5LvK72N7DAeSOYt0wCO', // ◀️◀️ REMPLISSEZ CECI
     // --- FIN ---
-    callbackURL: 'http://localhost:3000/auth/discord/callback',
+    callbackURL: 'https://valtrack.onrender.com/auth/discord/callback',
     scope: ['identify', 'guilds'] 
 }, async (accessToken, refreshToken, profile, done) => {
     try {
@@ -678,4 +678,5 @@ app.listen(port, () => {
     console.log(`Serveur démarré ! Ouvrez http://localhost:${port} dans votre navigateur.`);
     setupDatabase(); // Initialise la BDD
     fetchValorantApiData(); 
+
 });
