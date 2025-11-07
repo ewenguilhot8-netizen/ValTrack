@@ -58,7 +58,7 @@ passport.use(new DiscordStrategy({
     clientID: '1436123733197590624',       // ◀️◀️ REMPLISSEZ CECI
     clientSecret: 'Brj2sBvW84Lnq5LvK72N7DAeSOYt0wCO', // ◀️◀️ REMPLISSEZ CECI
     // --- FIN ---
-    callbackURL: 'https://valtrack.onrender.com/auth/discord/callback',
+    callbackURL: 'https://radianitedb.lol/auth/discord/callback',
     scope: ['identify', 'guilds'] 
 }, async (accessToken, refreshToken, profile, done) => {
     try {
@@ -680,3 +680,4 @@ app.listen(port, () => {
     fetchValorantApiData(); 
 
 });
+
