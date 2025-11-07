@@ -1,16 +1,25 @@
 const { Client, GatewayIntentBits, REST, Routes, EmbedBuilder } = require('discord.js');
 const cron = require('node-cron');
-const { knex } = require('./database.js'); // Réutilise la BDD
-const axios = require('axios'); // Pour appeler l'API Henrik
+const { knex } = require('./database.js'); 
+const axios = require('axios'); 
 
+// --- REMPLISSEZ CES 4 VALEURS ---
 const BOT_TOKEN = 'MTQzNjEyMzczMzE5NzU5MDYyNA.GTCKZu.foXcpZsPsciRJmxh4H1pmdZEk7hgMh7k93eNuI';       // ◀️◀️ REMPLISSEZ CECI
 const CLIENT_ID = '1436123733197590624';       // ◀️◀️ REMPLISSEZ CECI
 const HENRIK_API_KEY = "HDEV-bee70120-1e3c-4403-88a8-a2078f1f99a0"; // ◀️◀️ REMPLISSEZ CECI
+const YOUR_WEBSITE_URL = "https://radianitedb.lol"; // Remplacez par https://radianitedb.lol en production
+// --- FIN ---
 
 const henrikApi = axios.create({
     baseURL: 'https://api.henrikdev.xyz',
     headers: { 'Authorization': HENRIK_API_KEY }
 });
+
+// API pour votre propre serveur
+const localApi = axios.create({
+    baseURL: YOUR_WEBSITE_URL
+});
+
 
 const client = new Client({
     intents: [
@@ -58,7 +67,7 @@ client.on('interactionCreate', async interaction => {
             const user = await knex('users').where({ discord_id: discord_id }).first();
             if (!user) {
                 await interaction.reply({ 
-                    content: 'Vous devez d\'abord vous connecter sur le site RadianiteDB pour lier votre compte Discord !',
+                    content: `Vous devez d'abord vous connecter sur le site RadianiteDB (${YOUR_WEBSITE_URL}) pour lier votre compte Discord !`,
                     ephemeral: true 
                 });
                 return;
@@ -67,7 +76,7 @@ client.on('interactionCreate', async interaction => {
             await knex('users').where({ discord_id: discord_id }).update({
                 discord_channel_id: channel_id
             });
-
+            
             await interaction.reply({ 
                 content: `Parfait ! Les notifications pour vos joueurs suivis seront envoyées dans ce salon (#${interaction.channel.name}).`,
                 ephemeral: true 
@@ -86,7 +95,7 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 // Fonction de vérification
 async function checkFollowedPlayers() {
     console.log('Vérification des nouveaux matchs...');
-
+    
     // 1. Obtenir tous les joueurs suivis uniques et leur salon
     const subscriptions = await knex('followed_players')
         .join('users', 'users.id', 'followed_players.user_id')
@@ -114,11 +123,11 @@ async function checkFollowedPlayers() {
     for (const [riotId, targets] of playersToWatch.entries()) {
         try {
             const [name, tag] = riotId.split('#');
-
+            
             // 4. Obtenir les 5 derniers matchs
             const matchRes = await henrikApi.get(`/valorant/v3/matches/eu/${name}/${tag}?filter=competitive&size=5`);
             if (matchRes.data.data.length === 0) continue;
-
+            
             const latestMatch = matchRes.data.data[0];
             const latestMatchId = latestMatch.metadata.matchid;
 
@@ -128,24 +137,23 @@ async function checkFollowedPlayers() {
 
             if (latestMatchId !== lastAnnouncedId) {
                 console.log(`Nouveau match trouvé pour ${riotId}: ${latestMatchId}`);
-
+                
                 // 6. C'est un nouveau match ! Récupérer les stats complètes
-                // (Note: l'API v3/matches a déjà tout ce dont nous avons besoin)
                 const playerStats = latestMatch.players.all_players.find(p => p.name.toLowerCase() === name.toLowerCase());
                 const team = latestMatch.teams[playerStats.team.toLowerCase()];
-
+                
                 const kda = `${playerStats.stats.kills}/${playerStats.stats.deaths}/${playerStats.stats.assists}`;
                 const kd = (playerStats.stats.deaths === 0) ? playerStats.stats.kills : (playerStats.stats.kills / playerStats.stats.deaths).toFixed(2);
                 const acs = Math.round(playerStats.stats.score / latestMatch.metadata.rounds_played);
-
-                // 7. Tenter de récupérer le changement de RR (le point faible)
+                
+                // 7. Tenter de récupérer le changement de RR (via notre API locale pour le cache)
                 let rrChange = "N/A";
                 try {
-                    const statsRes = await henrixApi.get(`/api/stats/${name}/${tag}`); // Votre propre API !
+                    const statsRes = await localApi.get(`/api/stats/${name}/${tag}`);
                     if (statsRes.data.rankInfo.lastRRChange) {
                         rrChange = statsRes.data.rankInfo.lastRRChange > 0 ? `+${statsRes.data.rankInfo.lastRRChange}` : `${statsRes.data.rankInfo.lastRRChange}`;
                     }
-                } catch (e) { console.warn("Impossible de fetch le RR"); }
+                } catch (e) { console.warn(`Impossible de fetch le RR pour ${name}#${tag}: ${e.message}`); }
 
                 // 8. Construire l'Embed
                 const embed = new EmbedBuilder()
@@ -183,9 +191,14 @@ async function checkFollowedPlayers() {
                 }
             }
         } catch (err) {
-            console.error(`Erreur lors de la vérification de ${riotId}:`, err.message);
+            if (err.response && err.response.status === 429) {
+                console.warn('Rate limit atteinte ! Pause...');
+                await sleep(60000); // Pause d'une minute
+            } else {
+                console.error(`Erreur lors de la vérification de ${riotId}:`, err.message);
+            }
         }
-
+        
         // 11. NE PAS SPAMMER L'API !
         await sleep(5000); // 5 secondes d'attente entre chaque joueur
     }
